@@ -1,0 +1,50 @@
+RELACIONALES
+-∞
+|∞
++∞
+∞
+
+LOGICOS
+YY
+O
+|
+
+ARITMETICO
+mod%
+S++
+R--
+m#
+d//
+
+OPERADOR ASIGNACION
+d//∞
+R--∞
+m#∞
+S++∞
+mod%∞
+
+OPERADOR INCREMENTO - DECREMENTO
+[+]
+[-]
+
+
+Caracter
+/d/
+
+CADENA
+%COS%
+
+SEPARADORES
+,
+:
+.
+
+PALABRAS RESERVADAS
+class
+
+palabra reservada condicional
+Yes
+Not
+
+palabra reservada retorno
+>back
