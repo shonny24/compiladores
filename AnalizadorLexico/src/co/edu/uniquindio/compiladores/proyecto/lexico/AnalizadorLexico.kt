@@ -732,6 +732,82 @@ class AnalizadorLexico(var codigoFuente: String) {
         return false
     }
 
+    //Verifica si el token es un bloque de Agrupacion
+    fun esBloqueAgrupacionParentesis(): Boolean {
+        var lexema = ""
+        if (caracterActual == '(') {
+
+            var filaInicial = filaActual
+            var columnaInicial = columnaActual
+            var posicionInicial = posicionActual
+            lexema += caracterActual
+            obtenerSiguienteCaracter()
+            while (caracterActual != ')' && caracterActual != finCodigo) {
+                lexema += caracterActual
+                obtenerSiguienteCaracter()
+            }
+            if (caracterActual == ')') {
+                lexema += caracterActual
+                obtenerSiguienteCaracter()
+                if (caracterActual != 'C') {
+
+                    almacenarToken(
+                        lexema,
+                        Categoria.BLOQUE_AGRUPACION_PARENTESIS, filaInicial, columnaInicial
+                    )
+                    return true
+                } else {
+                    hacerBT(posicionInicial, filaInicial, columnaInicial)
+                    return false
+                }
+
+            } else {
+                hacerBT(posicionInicial, filaInicial, columnaInicial)
+                return false
+            }
+        }
+        //RI
+        return false
+    }
+
+    //Verifica si el token es un bloque de Agrupacion
+    fun esBloqueAgrupacionLlaves(): Boolean {
+        var lexema = ""
+        if (caracterActual == '{') {
+
+            var filaInicial = filaActual
+            var columnaInicial = columnaActual
+            var posicionInicial = posicionActual
+            lexema += caracterActual
+            obtenerSiguienteCaracter()
+            while (caracterActual != '}' && caracterActual != finCodigo) {
+                lexema += caracterActual
+                obtenerSiguienteCaracter()
+            }
+            if (caracterActual == '}') {
+                lexema += caracterActual
+                obtenerSiguienteCaracter()
+                if (caracterActual != 'C') {
+
+                    almacenarToken(
+                        lexema,
+                        Categoria.BLOQUE_AGRUPACION_LLAVES, filaInicial, columnaInicial
+                    )
+                    return true
+                } else {
+                    hacerBT(posicionInicial, filaInicial, columnaInicial)
+                    return false
+                }
+
+            } else {
+                hacerBT(posicionInicial, filaInicial, columnaInicial)
+                return false
+            }
+        }
+        //RI
+        return false
+    }
+
     //Repetir multiples veces la comprobacion de los automatas
     fun analizar() {
         while (caracterActual != finCodigo) {
@@ -740,6 +816,8 @@ class AnalizadorLexico(var codigoFuente: String) {
                 obtenerSiguienteCaracter()
                 continue
             }
+            if (esBloqueAgrupacionLlaves()) continue
+            if (esBloqueAgrupacionParentesis()) continue
             if (esComentarioBloque()) continue
             if (esEntero()) continue
             if (esCadena()) continue
