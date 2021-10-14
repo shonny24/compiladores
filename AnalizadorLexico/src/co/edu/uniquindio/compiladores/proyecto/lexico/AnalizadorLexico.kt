@@ -808,6 +808,44 @@ class AnalizadorLexico(var codigoFuente: String) {
         return false
     }
 
+    //Verifica si el token es un bloque de Agrupacion
+    fun esBloqueAgrupacionCorchetes(): Boolean {
+        var lexema = ""
+        if (caracterActual == '[') {
+
+            var filaInicial = filaActual
+            var columnaInicial = columnaActual
+            var posicionInicial = posicionActual
+            lexema += caracterActual
+            obtenerSiguienteCaracter()
+            while (caracterActual != ']' && caracterActual != finCodigo) {
+                lexema += caracterActual
+                obtenerSiguienteCaracter()
+            }
+            if (caracterActual == ']') {
+                lexema += caracterActual
+                obtenerSiguienteCaracter()
+                if (caracterActual != 'C') {
+
+                    almacenarToken(
+                        lexema,
+                        Categoria.BLOQUE_AGRUPACION_CORCHETES, filaInicial, columnaInicial
+                    )
+                    return true
+                } else {
+                    hacerBT(posicionInicial, filaInicial, columnaInicial)
+                    return false
+                }
+
+            } else {
+                hacerBT(posicionInicial, filaInicial, columnaInicial)
+                return false
+            }
+        }
+        //RI
+        return false
+    }
+
     //Repetir multiples veces la comprobacion de los automatas
     fun analizar() {
         while (caracterActual != finCodigo) {
@@ -827,6 +865,7 @@ class AnalizadorLexico(var codigoFuente: String) {
             if (esSeparadorPunto()) continue
             if (esOperadorAritmetico()) continue
             if (esOperadorIncrementoDecremento()) continue
+            if (esBloqueAgrupacionCorchetes()) continue
             if (esOperadorRelacional()) continue
             if (esOperadorLogico()) continue
             if (esOperadorAsignacion()) continue
