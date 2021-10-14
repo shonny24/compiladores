@@ -8,6 +8,68 @@ class AnalizadorLexico(var codigoFuente: String) {
     var filaActual = 0
     var columnaActual = 0
 
+    //Verifica si el token es un comentario de bloque
+    fun esComentarioBloque(): Boolean {
+        var lexema = ""
+        if (caracterActual == '.') {
+            var filaInicial = filaActual
+            var columnaInicial = columnaActual
+            var posicionInicial = posicionActual
+            lexema += caracterActual
+            obtenerSiguienteCaracter()
+            if (caracterActual == '.') {
+                lexema += caracterActual
+                obtenerSiguienteCaracter()
+                if (caracterActual == '.') {
+                    lexema += caracterActual
+                    obtenerSiguienteCaracter()
+                    if (caracterActual != '.') {
+                        lexema += caracterActual
+                        obtenerSiguienteCaracter()
+                        while (caracterActual != '.' && caracterActual != finCodigo) {
+                            lexema += caracterActual
+                            obtenerSiguienteCaracter()
+                        }
+
+                        lexema += caracterActual
+                        obtenerSiguienteCaracter()
+                        if (caracterActual == '.') {
+                            lexema += caracterActual
+                            obtenerSiguienteCaracter()
+                            if (caracterActual == '.') {
+                                lexema += caracterActual
+                                obtenerSiguienteCaracter()
+                                almacenarToken(
+                                    lexema,
+                                    Categoria.COMENTARIO_BLOQUE, filaInicial, columnaInicial
+                                )
+                                return true
+                            } else {
+                                hacerBT(posicionInicial, filaInicial, columnaInicial)
+                                return false
+                            }
+                        } else {
+                            hacerBT(posicionInicial, filaInicial, columnaInicial)
+                            return false
+                        }
+                    } else {
+                        hacerBT(posicionInicial, filaInicial, columnaInicial)
+                        return false
+                    }
+                } else {
+                    hacerBT(posicionInicial, filaInicial, columnaInicial)
+                    return false
+                }
+            } else {
+                hacerBT(posicionInicial, filaInicial, columnaInicial)
+                return false
+            }
+
+
+        }
+        //RI
+        return false
+    }
 
     fun esEntero(): Boolean {
         if (caracterActual.isDigit()) {
@@ -670,7 +732,6 @@ class AnalizadorLexico(var codigoFuente: String) {
         return false
     }
 
-
     //Repetir multiples veces la comprobacion de los automatas
     fun analizar() {
         while (caracterActual != finCodigo) {
@@ -679,6 +740,7 @@ class AnalizadorLexico(var codigoFuente: String) {
                 obtenerSiguienteCaracter()
                 continue
             }
+            if (esComentarioBloque()) continue
             if (esEntero()) continue
             if (esCadena()) continue
             if (esCaracter()) continue
@@ -694,6 +756,8 @@ class AnalizadorLexico(var codigoFuente: String) {
             if (esPalabraReservadaClase()) continue
             if (esUnaPalabraReservadaCondicional()) continue
             if (esPalabraReservadaRetorno()) continue
+
+
 
             almacenarToken(
                 "" + caracterActual,
