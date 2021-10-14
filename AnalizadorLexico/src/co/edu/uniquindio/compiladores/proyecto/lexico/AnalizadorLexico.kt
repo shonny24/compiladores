@@ -9,7 +9,6 @@ class AnalizadorLexico(var codigoFuente: String) {
     var columnaActual = 0
 
 
-
     fun esEntero(): Boolean {
         if (caracterActual.isDigit()) {
             //Inicialización de variables necesarias para almacenar información
