@@ -48,3 +48,14 @@ Not
 
 palabra reservada retorno
 >back
+
+comentario de bloque
+...COS...
+
+comentario de linea
+<COS>
+
+agrupadores
+(COS)
+[COS]
+{COS}

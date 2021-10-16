@@ -71,6 +71,45 @@ class AnalizadorLexico(var codigoFuente: String) {
         return false
     }
 
+    //Verifica si el token es un comentario de linea
+    fun esComentarioLinea(): Boolean {
+        var lexema = ""
+        if (caracterActual == '<') {
+
+            var filaInicial = filaActual
+            var columnaInicial = columnaActual
+            var posicionInicial = posicionActual
+            lexema += caracterActual
+            obtenerSiguienteCaracter()
+            while (caracterActual != '>' && caracterActual != finCodigo) {
+                lexema += caracterActual
+                obtenerSiguienteCaracter()
+            }
+            if (caracterActual == '>') {
+                lexema += caracterActual
+                obtenerSiguienteCaracter()
+                if (caracterActual != 'C') {
+
+                    almacenarToken(
+                        lexema,
+                        Categoria.COMENTARIO_LINEA, filaInicial, columnaInicial
+                    )
+                    return true
+                } else {
+                    hacerBT(posicionInicial, filaInicial, columnaInicial)
+                    return false
+                }
+
+            } else {
+                hacerBT(posicionInicial, filaInicial, columnaInicial)
+                return false
+            }
+        }
+        //RI
+        return false
+    }
+
+
     fun esEntero(): Boolean {
         if (caracterActual.isDigit()) {
             //Inicialización de variables necesarias para almacenar información
@@ -854,6 +893,7 @@ class AnalizadorLexico(var codigoFuente: String) {
                 obtenerSiguienteCaracter()
                 continue
             }
+            if (esComentarioLinea()) continue
             if (esBloqueAgrupacionLlaves()) continue
             if (esBloqueAgrupacionParentesis()) continue
             if (esComentarioBloque()) continue
