@@ -1,12 +1,16 @@
 RELACIONALES
 -∞
-|∞
 +∞
-∞
+|∞
+
+
 
 LOGICOS
+//and
 YY
+//or
 O
+//not
 |
 
 ARITMETICO

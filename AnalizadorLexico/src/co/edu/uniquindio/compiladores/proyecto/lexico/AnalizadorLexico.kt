@@ -1,13 +1,68 @@
 package co.edu.uniquindio.compiladores.proyecto.lexico
 
 class AnalizadorLexico(var codigoFuente: String) {
+    //se incrementa cuando hay bucles o condiciones
     var posicionActual = 0
     var caracterActual = codigoFuente[0]
+    //lista de palabras que se van reconociendo en nuestro lenguaje
     var listaTokens = ArrayList<Token>()
     var finCodigo = 0.toChar()
     var filaActual = 0
     var columnaActual = 0
 
+    //Verifica si el token es un numero decimal
+    fun esDecimal(): Boolean {
+
+        if (caracterActual== ',') {
+            //Inicialización de variables necesarias para almacenar información
+            var lexema = ""
+            val filaInicial = filaActual
+            val columnaInicial = columnaActual
+            val posicionInicial = posicionActual
+            //Transición Inicial
+            lexema += caracterActual
+            obtenerSiguienteCaracter()
+            //Bucle
+            while (caracterActual.isDigit()) {
+                //Transición
+                lexema += caracterActual
+                obtenerSiguienteCaracter()
+            }
+            //Bactracking BT
+            if (caracterActual.isLetter()) {
+                hacerBT(posicionInicial, filaInicial, columnaInicial)
+                return false
+            }
+            //Aceptación y Almacenamiento AA
+            almacenarToken(lexema, Categoria.DECIMAL, filaInicial, columnaInicial)
+            return true
+        }
+        else {
+
+            if (caracterActual.isDigit()) {
+                //Inicialización de variables necesarias para almacenar información
+                var lexema = ""
+                val filaInicial = filaActual
+                val columnaInicial = columnaActual
+                val posicionInicial = posicionActual
+                //Transición Inicial
+                lexema += caracterActual
+                obtenerSiguienteCaracter()
+                //Bucle
+                while (caracterActual.isDigit() || caracterActual== ',') {
+                    //Transición
+                    lexema += caracterActual
+                    obtenerSiguienteCaracter()
+                }
+                //Aceptación y Almacenamiento AA
+                almacenarToken(lexema, Categoria.DECIMAL, filaInicial, columnaInicial)
+                return true
+            }
+        }
+
+        //Rechazo inmediato RI
+        return false
+    }
     //Verifica si el token es un comentario de bloque
     fun esComentarioBloque(): Boolean {
         var lexema = ""
@@ -593,6 +648,152 @@ class AnalizadorLexico(var codigoFuente: String) {
         return false
     }
 
+    //Verifica si el token es un bloque de Agrupacion
+    fun esBloqueAgrupacionParentesis(): Boolean {
+        var lexema = ""
+        if (caracterActual == '(') {
+
+            var filaInicial = filaActual
+            var columnaInicial = columnaActual
+            var posicionInicial = posicionActual
+            lexema += caracterActual
+            obtenerSiguienteCaracter()
+            while (caracterActual != ')' && caracterActual != finCodigo) {
+                lexema += caracterActual
+                obtenerSiguienteCaracter()
+            }
+            if (caracterActual == ')') {
+                lexema += caracterActual
+                obtenerSiguienteCaracter()
+                if (caracterActual != 'C') {
+
+                    almacenarToken(
+                        lexema,
+                        Categoria.BLOQUE_AGRUPACION_PARENTESIS, filaInicial, columnaInicial
+                    )
+                    return true
+                } else {
+                    hacerBT(posicionInicial, filaInicial, columnaInicial)
+                    return false
+                }
+
+            } else {
+                hacerBT(posicionInicial, filaInicial, columnaInicial)
+                return false
+            }
+        }
+        //RI
+        return false
+    }
+
+    //Verifica si el token es un parentesis Izquierdo
+    fun esParentesisIzquierdo(): Boolean {
+        var lexema = ""
+        if (caracterActual == '(') {
+            var filaInicial = filaActual
+            var columnaInicial = columnaActual
+            lexema += caracterActual
+            obtenerSiguienteCaracter()
+            almacenarToken(
+                lexema,
+                Categoria.PARENTESIS_IZQUIERDO, filaInicial, columnaInicial
+            )
+            return true
+        }
+        //Rechazo inmediato RI
+        return false
+    }
+
+    //Verifica si el token es un parentesis derecho
+    fun esParentesisDerecho(): Boolean {
+        var lexema = ""
+        if (caracterActual == ')') {
+            var filaInicial = filaActual
+            var columnaInicial = columnaActual
+            lexema += caracterActual
+            obtenerSiguienteCaracter()
+            almacenarToken(
+                lexema,
+                Categoria.PARENTESIS_DERECHO, filaInicial, columnaInicial
+            )
+            return true
+        }
+        //Rechazo inmediato RI
+        return false
+    }
+
+    //Verifica si el token es un llave Izquierdo
+    fun esLlaveIzquierdo(): Boolean {
+        var lexema = ""
+        if (caracterActual == '{') {
+            var filaInicial = filaActual
+            var columnaInicial = columnaActual
+            lexema += caracterActual
+            obtenerSiguienteCaracter()
+            almacenarToken(
+                lexema,
+                Categoria.LLAVE_IZQUIERDO, filaInicial, columnaInicial
+            )
+            return true
+        }
+        //Rechazo inmediato RI
+        return false
+    }
+
+    //Verifica si el token es un llave derecho
+    fun esLlaveDerecho(): Boolean {
+        var lexema = ""
+        if (caracterActual == '}') {
+            var filaInicial = filaActual
+            var columnaInicial = columnaActual
+            lexema += caracterActual
+            obtenerSiguienteCaracter()
+            almacenarToken(
+                lexema,
+                Categoria.LLAVE_DERECHO, filaInicial, columnaInicial
+            )
+            return true
+        }
+        //Rechazo inmediato RI
+        return false
+    }
+
+    //Verifica si el token es un llave Izquierdo
+    fun esCorcheteIzquierdo(): Boolean {
+        var lexema = ""
+        if (caracterActual == '[') {
+            var filaInicial = filaActual
+            var columnaInicial = columnaActual
+            lexema += caracterActual
+            obtenerSiguienteCaracter()
+            almacenarToken(
+                lexema,
+                Categoria.CORCHETE_IZQUIERDO, filaInicial, columnaInicial
+            )
+            return true
+        }
+        //Rechazo inmediato RI
+        return false
+    }
+
+    //Verifica si el token es un llave derecho
+    fun esCorcheteDerecho(): Boolean {
+        var lexema = ""
+        if (caracterActual == ']') {
+            var filaInicial = filaActual
+            var columnaInicial = columnaActual
+            lexema += caracterActual
+            obtenerSiguienteCaracter()
+            almacenarToken(
+                lexema,
+                Categoria.CORCHETE_DERECHO, filaInicial, columnaInicial
+            )
+            return true
+        }
+        //Rechazo inmediato RI
+        return false
+    }
+
 
     //Verifica si es un identificador de clase
     fun esPalabraReservadaClase(): Boolean {
@@ -772,44 +973,6 @@ class AnalizadorLexico(var codigoFuente: String) {
     }
 
     //Verifica si el token es un bloque de Agrupacion
-    fun esBloqueAgrupacionParentesis(): Boolean {
-        var lexema = ""
-        if (caracterActual == '(') {
-
-            var filaInicial = filaActual
-            var columnaInicial = columnaActual
-            var posicionInicial = posicionActual
-            lexema += caracterActual
-            obtenerSiguienteCaracter()
-            while (caracterActual != ')' && caracterActual != finCodigo) {
-                lexema += caracterActual
-                obtenerSiguienteCaracter()
-            }
-            if (caracterActual == ')') {
-                lexema += caracterActual
-                obtenerSiguienteCaracter()
-                if (caracterActual != 'C') {
-
-                    almacenarToken(
-                        lexema,
-                        Categoria.BLOQUE_AGRUPACION_PARENTESIS, filaInicial, columnaInicial
-                    )
-                    return true
-                } else {
-                    hacerBT(posicionInicial, filaInicial, columnaInicial)
-                    return false
-                }
-
-            } else {
-                hacerBT(posicionInicial, filaInicial, columnaInicial)
-                return false
-            }
-        }
-        //RI
-        return false
-    }
-
-    //Verifica si el token es un bloque de Agrupacion
     fun esBloqueAgrupacionLlaves(): Boolean {
         var lexema = ""
         if (caracterActual == '{') {
@@ -893,19 +1056,26 @@ class AnalizadorLexico(var codigoFuente: String) {
                 obtenerSiguienteCaracter()
                 continue
             }
-            if (esComentarioLinea()) continue
-            if (esBloqueAgrupacionLlaves()) continue
-            if (esBloqueAgrupacionParentesis()) continue
-            if (esComentarioBloque()) continue
+            if (esOperadorIncrementoDecremento()) continue
+            if (esLlaveDerecho()) continue
+            if (esLlaveIzquierdo()) continue
+            if (esParentesisDerecho()) continue
+            if (esParentesisIzquierdo()) continue
+            if (esCorcheteDerecho()) continue
+            if (esCorcheteIzquierdo()) continue
+            //if (esBloqueAgrupacionParentesis()) continue
+            //if (esBloqueAgrupacionLlaves()) continue
+            //if (esBloqueAgrupacionCorchetes()) continue
             if (esEntero()) continue
+            if (esDecimal()) continue
+            if (esComentarioLinea()) continue
+            if (esComentarioBloque()) continue
             if (esCadena()) continue
             if (esCaracter()) continue
             if (esSeparadorDosPuntos()) continue
             if (esSeparadorComa()) continue
             if (esSeparadorPunto()) continue
             if (esOperadorAritmetico()) continue
-            if (esOperadorIncrementoDecremento()) continue
-            if (esBloqueAgrupacionCorchetes()) continue
             if (esOperadorRelacional()) continue
             if (esOperadorLogico()) continue
             if (esOperadorAsignacion()) continue
