@@ -182,7 +182,7 @@ class AnalizadorLexico(var codigoFuente: String) {
                 obtenerSiguienteCaracter()
             }
             //Bactracking BT
-            if (caracterActual == '.') {
+            if (caracterActual == ',') {
                 hacerBT(posicionInicial, filaInicial, columnaInicial)
                 return false
             }
@@ -193,6 +193,62 @@ class AnalizadorLexico(var codigoFuente: String) {
         //Rechazo inmediato RI
         return false
     }
+
+    //Verifica si el token es un numero decimal
+    fun esDecimal(): Boolean {
+
+        if (caracterActual== ',') {
+                //Inicialización de variables necesarias para almacenar información
+                var lexema = ""
+                val filaInicial = filaActual
+                val columnaInicial = columnaActual
+                val posicionInicial = posicionActual
+                //Transición Inicial
+                lexema += caracterActual
+                obtenerSiguienteCaracter()
+                //Bucle
+                while (caracterActual.isDigit()) {
+                    //Transición
+                    lexema += caracterActual
+                    obtenerSiguienteCaracter()
+                }
+                //Bactracking BT
+                if (caracterActual.isLetter()) {
+                    hacerBT(posicionInicial, filaInicial, columnaInicial)
+                    return false
+                }
+                //Aceptación y Almacenamiento AA
+                almacenarToken(lexema, Categoria.DECIMAL, filaInicial, columnaInicial)
+                return true
+        }
+        else {
+
+            if (caracterActual.isDigit()) {
+                //Inicialización de variables necesarias para almacenar información
+                var lexema = ""
+                val filaInicial = filaActual
+                val columnaInicial = columnaActual
+                val posicionInicial = posicionActual
+                //Transición Inicial
+                lexema += caracterActual
+                obtenerSiguienteCaracter()
+                //Bucle
+                while (caracterActual.isDigit() || caracterActual== ',') {
+                    //Transición
+                    lexema += caracterActual
+                    obtenerSiguienteCaracter()
+                }
+                //Aceptación y Almacenamiento AA
+                almacenarToken(lexema, Categoria.DECIMAL, filaInicial, columnaInicial)
+                return true
+            }
+        }
+
+        //Rechazo inmediato RI
+        return false
+    }
+
+
 
     //Verifica si el token es una cadena
     fun esCadena(): Boolean {
@@ -1070,6 +1126,11 @@ class AnalizadorLexico(var codigoFuente: String) {
             if (esDecimal()) continue
             if (esComentarioLinea()) continue
             if (esComentarioBloque()) continue
+<<<<<<< HEAD
+=======
+            if (esEntero()) continue
+            if (esDecimal())continue
+>>>>>>> ddf00b70df4c1bc1f2bc75672df19417e77a91f4
             if (esCadena()) continue
             if (esCaracter()) continue
             if (esSeparadorDosPuntos()) continue
